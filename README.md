@@ -27,6 +27,20 @@ php artisan user-tools:user-password dan@example.com --generate
 php artisan user-tools:user-password 15 --column=id
 ```
 
+### List all users
+
+```bash
+php artisan user-tools:list-users
+```
+
+### Change a user's email address
+
+```bash
+php artisan user-tools:user-amend-email dan@example.com
+php artisan user-tools:user-amend-email 15 --column=id
+php artisan user-tools:user-amend-email dan@example.com --email=new@example.com
+```
+
 ## Practical notes
 
 First, this package assumes your user table has a `password` column and your configured user model is Eloquent-backed, which is the normal Laravel setup.

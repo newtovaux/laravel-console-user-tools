@@ -12,7 +12,7 @@ use function Laravel\Prompts\text;
 
 final class ChangeUserPasswordCommand extends Command
 {
-    protected $signature = 'password-tools:user-password
+    protected $signature = 'user-tools:user-password
                             {identifier? : The user identifier, e.g. email}
                             {--column= : Column to search against}
                             {--password= : Password to set}
@@ -24,8 +24,8 @@ final class ChangeUserPasswordCommand extends Command
     public function handle(): int
     {
         /** @var class-string<\Illuminate\Database\Eloquent\Model> $userModel */
-        $userModel = (string) config('password-tools.user_model');
-        $column = (string) ($this->option('column') ?: config('password-tools.lookup_column', 'email'));
+        $userModel = (string) config('user-tools.user_model');
+        $column = (string) ($this->option('column') ?: config('user-tools.lookup_column', 'email'));
 
         if (! class_exists($userModel)) {
             $this->error("Configured user model [{$userModel}] does not exist.");

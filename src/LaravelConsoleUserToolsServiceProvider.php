@@ -8,13 +8,13 @@ use Newtovaux\LaravelConsoleUserTools\Console\ChangeUserPasswordCommand;
 use Newtovaux\LaravelConsoleUserTools\Console\CreatePasswordCommand;
 use Illuminate\Support\ServiceProvider;
 
-final class PasswordToolsServiceProvider extends ServiceProvider
+final class LaravelConsoleUserToolsServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/password-tools.php',
-            'password-tools'
+            __DIR__ . '/../config/user-tools.php',
+            'user-tools'
         );
     }
 
@@ -22,8 +22,8 @@ final class PasswordToolsServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/password-tools.php' => config_path('password-tools.php'),
-            ], 'password-tools-config');
+                __DIR__ . '/../config/user-tools.php' => config_path('user-tools.php'),
+            ], 'user-tools-config');
 
             $this->commands([
                 CreatePasswordCommand::class,

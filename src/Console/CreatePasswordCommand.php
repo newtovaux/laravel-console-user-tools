@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 final class CreatePasswordCommand extends Command
 {
-    protected $signature = 'password-tools:create
+    protected $signature = 'user-tools:create
                             {--length= : Password length}
                             {--no-symbols : Exclude symbols}
                             {--copy : Attempt to copy to clipboard (not implemented)}';
@@ -18,7 +18,7 @@ final class CreatePasswordCommand extends Command
 
     public function handle(): int
     {
-        $length = (int) ($this->option('length') ?: config('password-tools.generated_length', 20));
+        $length = (int) ($this->option('length') ?: config('user-tools.generated_length', 20));
 
         if ($length < 8) {
             $this->error('Password length must be at least 8 characters.');

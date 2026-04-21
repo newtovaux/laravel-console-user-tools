@@ -6,7 +6,7 @@ Artisan commands for generating passwords and changing user passwords in Laravel
 
 ```bash
 composer require newtovaux/laravel-console-user-tools
-php artisan vendor:publish --tag=password-tools-config
+php artisan vendor:publish --tag=user-tools-config
 ```
 
 ## Commands
@@ -14,17 +14,17 @@ php artisan vendor:publish --tag=password-tools-config
 ### Generate a password
 
 ```bash
-php artisan password-tools:create
-php artisan password-tools:create --length=24
-php artisan password-tools:create --no-symbols
+php artisan user-tools:create
+php artisan user-tools:create --length=24
+php artisan user-tools:create --no-symbols
 ```
 
 ### Change a user's password
 
 ```bash
-php artisan password-tools:user-password dan@example.com
-php artisan password-tools:user-password dan@example.com --generate
-php artisan password-tools:user-password 15 --column=id
+php artisan user-tools:user-password dan@example.com
+php artisan user-tools:user-password dan@example.com --generate
+php artisan user-tools:user-password 15 --column=id
 ```
 
 ## Practical notes

@@ -6,6 +6,7 @@ namespace Newtovaux\LaravelConsoleUserTools;
 
 use Newtovaux\LaravelConsoleUserTools\Console\ChangeUserPasswordCommand;
 use Newtovaux\LaravelConsoleUserTools\Console\CreatePasswordCommand;
+use Newtovaux\LaravelConsoleUserTools\Console\ListUsersCommand;
 use Illuminate\Support\ServiceProvider;
 
 final class LaravelConsoleUserToolsServiceProvider extends ServiceProvider
@@ -28,6 +29,7 @@ final class LaravelConsoleUserToolsServiceProvider extends ServiceProvider
             $this->commands([
                 CreatePasswordCommand::class,
                 ChangeUserPasswordCommand::class,
+                ListUsersCommand::class,
             ]);
         }
     }

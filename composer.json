@@ -1,6 +1,6 @@
 {
     "name": "newtovaux/laravel-console-user-tools",
-    "description": "Artisan commands for generating passwords and changing Laravel user passwords.",
+    "description": "Artisan commands for generating passwords, changing user passwords, listing users, and amending user email addresses in Laravel applications.",
     "keywords": ["laravel","console", "artisan", "password", "user", "tools"],
     "homepage": "https://github.com/newtovaux/laravel-console-user-tools",
     "type": "library",

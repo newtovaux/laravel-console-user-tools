@@ -29,5 +29,8 @@ Homestead.json
 .phpactor.json
 auth.json
 
+.phpunit.cache
+.phpunit.result.cache
+
 # Agentic support files
 .codex

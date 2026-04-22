@@ -6,10 +6,8 @@ namespace Newtovaux\LaravelConsoleUserTools\Tests\Unit;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
-use Newtovaux\LaravelConsoleUserTools\Console\ChangeUserPasswordCommand;
 use Newtovaux\LaravelConsoleUserTools\Tests\TestCase;
 use Newtovaux\LaravelConsoleUserTools\Tests\TestUser;
-use ReflectionMethod;
 use Symfony\Component\Console\Command\Command;
 
 class ChangeUserPasswordCommandTest extends TestCase
@@ -99,6 +97,8 @@ class ChangeUserPasswordCommandTest extends TestCase
 
     public function test_command_handles_custom_generated_password_length(): void
     {
+        $originalHash = TestUser::where('email', 'test@example.com')->value('password');
+
         $this->artisan('user-tools:user-password', [
             'identifier' => 'test@example.com',
             '--generate' => true,
@@ -108,6 +108,10 @@ class ChangeUserPasswordCommandTest extends TestCase
             ->expectsOutputToContain('Generated password for test@example.com:')
             ->expectsOutputToContain('Aborted.')
             ->assertExitCode(Command::FAILURE);
+
+        $user = TestUser::where('email', 'test@example.com')->first();
+
+        $this->assertSame($originalHash, $user->password);
     }
 
     public function test_command_aborts_when_user_declines_confirmation(): void
@@ -127,15 +131,36 @@ class ChangeUserPasswordCommandTest extends TestCase
         $this->assertSame($originalHash, $user->password);
     }
 
-    public function test_generated_password_uses_requested_length(): void
+    public function test_command_fails_when_password_option_is_too_short(): void
     {
-        $command = new ChangeUserPasswordCommand();
-        $method = new ReflectionMethod($command, 'generatePassword');
-        $password = $method->invoke($command, 16);
+        $originalHash = TestUser::where('email', 'test@example.com')->value('password');
 
-        $this->assertSame(16, strlen($password));
-        $this->assertMatchesRegularExpression('/[A-Za-z]/', $password);
-        $this->assertMatchesRegularExpression('/[2-9]/', $password);
-        $this->assertMatchesRegularExpression('/[!@#$%^&*()\-_=+[\]{}?]/', $password);
+        $exitCode = Artisan::call('user-tools:user-password', [
+            'identifier' => 'test@example.com',
+            '--password' => 'short',
+        ]);
+
+        $output = Artisan::output();
+
+        $this->assertStringContainsString('Password length must be at least 8 characters.', $output);
+        $this->assertEquals(Command::FAILURE, $exitCode);
+        $this->assertSame($originalHash, TestUser::where('email', 'test@example.com')->value('password'));
+    }
+
+    public function test_command_fails_when_generated_password_length_is_too_short(): void
+    {
+        $originalHash = TestUser::where('email', 'test@example.com')->value('password');
+
+        $exitCode = Artisan::call('user-tools:user-password', [
+            'identifier' => 'test@example.com',
+            '--generate' => true,
+            '--length' => 6,
+        ]);
+
+        $output = Artisan::output();
+
+        $this->assertStringContainsString('Password length must be at least 8 characters.', $output);
+        $this->assertEquals(Command::FAILURE, $exitCode);
+        $this->assertSame($originalHash, TestUser::where('email', 'test@example.com')->value('password'));
     }
 }

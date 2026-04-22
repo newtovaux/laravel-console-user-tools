@@ -6,12 +6,20 @@ namespace Newtovaux\LaravelConsoleUserTools\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use InvalidArgumentException;
+use Newtovaux\LaravelConsoleUserTools\Support\PasswordService;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\text;
 
 final class ChangeUserPasswordCommand extends Command
 {
+    public function __construct(
+        private readonly PasswordService $passwords
+    ) {
+        parent::__construct();
+    }
+
     protected $signature = 'user-tools:user-password
                             {identifier? : The user identifier, e.g. email}
                             {--column= : Column to search against}
@@ -51,13 +59,12 @@ final class ChangeUserPasswordCommand extends Command
 
         if ($password === '') {
             if ((bool) $this->option('generate')) {
-                $password = $this->generatePassword((int) $this->option('length'));
+                $password = $this->passwords->generate((int) $this->option('length'));
                 $this->warn("Generated password for {$identifier}: {$password}");
             } else {
                 $password = password(
                     label: 'Enter the new password',
-                    required: true,
-                    validate: ['password' => ['required', 'string', 'min:8']]
+                    required: true
                 );
 
                 $confirmation = password(
@@ -73,6 +80,14 @@ final class ChangeUserPasswordCommand extends Command
             }
         }
 
+        try {
+            $this->passwords->ensureValid($password);
+        } catch (InvalidArgumentException $exception) {
+            $this->error($exception->getMessage());
+
+            return self::FAILURE;
+        }
+
         if (! confirm("Change password for user [{$identifier}]?", default: false)) {
             $this->warn('Aborted.');
 
@@ -85,27 +100,5 @@ final class ChangeUserPasswordCommand extends Command
         $this->info("Password updated for user [{$identifier}].");
 
         return self::SUCCESS;
-    }
-
-    private function generatePassword(int $length): string
-    {
-        $letters = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
-        $numbers = '23456789';
-        $symbols = '!@#$%^&*()-_=+[]{}?';
-        $pool = $letters . $numbers . $symbols;
-
-        $chars = [
-            $letters[random_int(0, strlen($letters) - 1)],
-            $numbers[random_int(0, strlen($numbers) - 1)],
-            $symbols[random_int(0, strlen($symbols) - 1)],
-        ];
-
-        while (count($chars) < max($length, 8)) {
-            $chars[] = $pool[random_int(0, strlen($pool) - 1)];
-        }
-
-        shuffle($chars);
-
-        return implode('', array_slice($chars, 0, max($length, 8)));
     }
 }

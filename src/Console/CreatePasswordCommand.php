@@ -5,10 +5,17 @@ declare(strict_types=1);
 namespace Newtovaux\LaravelConsoleUserTools\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
+use InvalidArgumentException;
+use Newtovaux\LaravelConsoleUserTools\Support\PasswordService;
 
 final class CreatePasswordCommand extends Command
 {
+    public function __construct(
+        private readonly PasswordService $passwords
+    ) {
+        parent::__construct();
+    }
+
     protected $signature = 'user-tools:create
                             {--length= : Password length}
                             {--no-symbols : Exclude symbols}
@@ -20,16 +27,17 @@ final class CreatePasswordCommand extends Command
     {
         $length = (int) ($this->option('length') ?: config('user-tools.generated_length', 20));
 
-        if ($length < 8) {
-            $this->error('Password length must be at least 8 characters.');
+        try {
+            $password = $this->passwords->generate(
+                $length,
+                includeSymbols: ! (bool) $this->option('no-symbols')
+            );
+            $this->passwords->ensureValid($password);
+        } catch (InvalidArgumentException $exception) {
+            $this->error($exception->getMessage());
 
             return self::FAILURE;
         }
-
-        $password = $this->generatePassword(
-            $length,
-            includeSymbols: ! (bool) $this->option('no-symbols')
-        );
 
         $this->newLine();
         $this->info('Generated password:');
@@ -43,30 +51,5 @@ final class CreatePasswordCommand extends Command
         }
 
         return self::SUCCESS;
-    }
-
-    private function generatePassword(int $length, bool $includeSymbols = true): string
-    {
-        $letters = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
-        $numbers = '23456789';
-        $symbols = '!@#$%^&*()-_=+[]{}?';
-        $pool = $letters . $numbers . ($includeSymbols ? $symbols : '');
-
-        $required = [
-            $letters[random_int(0, strlen($letters) - 1)],
-            $numbers[random_int(0, strlen($numbers) - 1)],
-        ];
-
-        if ($includeSymbols) {
-            $required[] = $symbols[random_int(0, strlen($symbols) - 1)];
-        }
-
-        while (count($required) < $length) {
-            $required[] = $pool[random_int(0, strlen($pool) - 1)];
-        }
-
-        shuffle($required);
-
-        return implode('', array_slice($required, 0, $length));
     }
 }

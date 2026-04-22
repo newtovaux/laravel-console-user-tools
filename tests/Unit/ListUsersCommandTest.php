@@ -102,6 +102,34 @@ class ListUsersCommandTest extends TestCase
         $this->assertEquals(Command::SUCCESS, $exitCode);
     }
 
+    public function test_command_honors_limit_option(): void
+    {
+        for ($i = 1; $i <= 5; $i++) {
+            TestUser::create([
+                'name' => "User {$i}",
+                'email' => "user{$i}@example.com",
+                'password' => Hash::make('password123'),
+            ]);
+        }
+
+        $exitCode = Artisan::call('user-tools:list-users', ['--limit' => 2]);
+        $output = Artisan::output();
+
+        $this->assertStringContainsString('user1@example.com', $output);
+        $this->assertStringContainsString('user2@example.com', $output);
+        $this->assertStringNotContainsString('user3@example.com', $output);
+        $this->assertEquals(Command::SUCCESS, $exitCode);
+    }
+
+    public function test_command_fails_with_invalid_limit_option(): void
+    {
+        $exitCode = Artisan::call('user-tools:list-users', ['--limit' => 0]);
+        $output = Artisan::output();
+
+        $this->assertStringContainsString('The --limit option must be a positive integer.', $output);
+        $this->assertEquals(Command::FAILURE, $exitCode);
+    }
+
     public function test_command_omits_unselected_columns_from_output(): void
     {
         TestUser::create([

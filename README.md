@@ -1,8 +1,10 @@
 # Laravel Console User Tools
 
-Artisan commands for generating passwords and changing user passwords in Laravel 13.
+Artisan commands for generating passwords, changing user passwords, listing users, and amending user email addresses in Laravel 12 applications.
 
 ## Installation
+
+This package currently targets Laravel 12 and above, and PHP 8.3+.
 
 ```bash
 composer require newtovaux/laravel-console-user-tools

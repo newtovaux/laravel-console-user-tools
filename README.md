@@ -19,20 +19,26 @@ php artisan vendor:publish --tag=user-tools-config
 php artisan user-tools:create
 php artisan user-tools:create --length=24
 php artisan user-tools:create --no-symbols
+php artisan user-tools:create --copy
+php artisan user-tools:create --length=32 --no-symbols --copy
 ```
 
 ### Change a user's password
 
 ```bash
 php artisan user-tools:user-password dan@example.com
+php artisan user-tools:user-password dan@example.com --password='new-password-123'
 php artisan user-tools:user-password dan@example.com --generate
+php artisan user-tools:user-password dan@example.com --generate --length=24
 php artisan user-tools:user-password 15 --column=id
+php artisan user-tools:user-password 15 --column=id --password='new-password-123'
 ```
 
 ### List all users
 
 ```bash
 php artisan user-tools:list-users
+php artisan user-tools:list-users --limit=50
 ```
 
 ### Change a user's email address
@@ -41,6 +47,7 @@ php artisan user-tools:list-users
 php artisan user-tools:user-amend-email dan@example.com
 php artisan user-tools:user-amend-email 15 --column=id
 php artisan user-tools:user-amend-email dan@example.com --email=new@example.com
+php artisan user-tools:user-amend-email 15 --column=id --email=new@example.com
 ```
 
 ## Practical notes

@@ -2,12 +2,25 @@
 
 Artisan commands for generating passwords, changing user passwords, listing users, and amending user email addresses in Laravel 12 applications.
 
+## Why?
+
+If you've ever had to jump onto a host, or into a container, because you don't have UI acceess (or if there's an issue) and you just need to quickly reset a password or alter a User somehow. If you don't want to memorise a bunch of SQL commands. If you just need to do User management quickly and easily.
+
+... then perhaps this little package can help.
+
 ## Installation
 
-This package currently targets Laravel 12 and above, and PHP 8.3+.
+Available in Composer via Packagist: https://packagist.org/packages/newtovaux/laravel-console-user-tools and is available via Github: https://packagist.org/packages/newtovaux/laravel-console-user-tools
+
+This package currently targets Laravel 12 and above (tested on 13 too), and PHP 8.3+.
 
 ```bash
 composer require newtovaux/laravel-console-user-tools
+```
+
+### Optional
+
+```bash
 php artisan vendor:publish --tag=user-tools-config
 ```
 
@@ -55,3 +68,18 @@ php artisan user-tools:user-amend-email 15 --column=id --email=new@example.com
 First, this package assumes your user table has a `password` column and your configured user model is Eloquent-backed, which is the normal Laravel setup.
 
 Second, the application’s configured auth user model by default so the package stays reusable across projects instead of hard-coding `App\Models\User`. That aligns well with Laravel’s package and auth conventions.
+
+## Tests
+
+Install development dependencies, then run the test suite with Composer:
+
+```bash
+composer install
+composer test
+```
+
+The package tests run with PHPUnit 11 and Orchestra Testbench against an in-memory SQLite database, so no separate test database setup is required.
+
+## License
+
+This software is released under the MIT license.
